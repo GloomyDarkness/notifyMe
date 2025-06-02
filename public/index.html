@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NotifyMe - Sistema Kanban</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link href="/css/styles.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-clipboard-check me-2"></i>
+                NotifyMe
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+              <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <!-- Board selector will be added here by JavaScript -->
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item me-2">
+                        <button id="addColumnBtn" class="btn btn-outline-primary btn-sm" style="display: none;">
+                            <i class="fas fa-plus me-1"></i>Nova Coluna
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button id="userProfileBtn" class="btn btn-outline-primary">
+                            <i class="fas fa-user"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container-fluid mt-4">
+        <div class="board-container">            <div id="board" class="board">
+                <!-- Board content will be loaded here -->
+                <div class="loading-container">
+                    <div class="spinner-border text-primary loading-spinner mb-3" role="status">
+                        <span class="visually-hidden">Carregando...</span>
+                    </div>
+                    <h4 class="loading-title">Carregando aplicação...</h4>
+                    <p class="loading-subtitle">Aguarde enquanto preparamos tudo para você</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h1 class="modal-title fs-5" id="loginModalLabel">
+                        <i class="fas fa-sign-in-alt me-2"></i>Entrar no NotifyMe
+                    </h1>
+                </div>
+                <div class="modal-body">
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label for="loginEmail" class="form-label">Email</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-envelope"></i>
+                                </span>
+                                <input type="email" class="form-control" id="loginEmail" value="admin@notifyme.com" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="loginPassword" class="form-label">Senha</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                                <input type="password" class="form-control" id="loginPassword" value="admin123" required>
+                                <button type="button" class="btn btn-outline-secondary" id="togglePassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100" id="loginBtn">
+                            <i class="fas fa-sign-in-alt me-2"></i>Entrar
+                        </button>
+                    </form>
+                    
+                    <div class="mt-4 p-3 bg-light rounded">
+                        <h6 class="text-muted mb-2">Conta de teste pré-preenchida:</h6>
+                        <small class="text-muted">
+                            <strong>Email:</strong> admin@notifyme.com<br>
+                            <strong>Senha:</strong> admin123
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Column Modal -->
+    <div class="modal fade" id="addColumnModal" tabindex="-1" aria-labelledby="addColumnModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addColumnModalLabel">
+                        <i class="fas fa-columns me-2"></i>Nova Coluna
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addColumnForm">
+                        <div class="mb-3">
+                            <label for="columnTitle" class="form-label">Título da Coluna</label>
+                            <input type="text" class="form-control" id="columnTitle" placeholder="Ex: A Fazer, Em Progresso, Concluído..." required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="columnType" class="form-label">Tipo da Coluna</label>
+                            <select class="form-select" id="columnType">
+                                <option value="normal">Normal</option>
+                                <option value="pending">Pendente</option>
+                                <option value="urgent">Urgente</option>
+                                <option value="completed">Concluído</option>
+                            </select>
+                            <div class="form-text">O tipo da coluna afeta sua aparência visual</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveColumnBtn">
+                        <i class="fas fa-plus me-1"></i>Criar Coluna
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Card Modal -->
+    <div class="modal fade" id="addCardModal" tabindex="-1" aria-labelledby="addCardModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addCardModalLabel">
+                        <i class="fas fa-plus me-2"></i>Novo Card
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addCardForm">
+                        <div class="mb-3">
+                            <label for="cardTitle" class="form-label">Título do Card</label>
+                            <input type="text" class="form-control" id="cardTitle" placeholder="Digite o título do card..." required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cardDescription" class="form-label">Descrição (opcional)</label>
+                            <textarea class="form-control" id="cardDescription" rows="3" placeholder="Descreva os detalhes do card..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cardPriority" class="form-label">Prioridade</label>
+                            <select class="form-select" id="cardPriority">
+                                <option value="baixa">Baixa</option>
+                                <option value="media" selected>Média</option>
+                                <option value="alta">Alta</option>
+                                <option value="urgente">Urgente</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cardDueDate" class="form-label">Data de Vencimento (opcional)</label>
+                            <input type="date" class="form-control" id="cardDueDate">
+                        </div>
+                        <input type="hidden" id="cardColumnId">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveCardBtn">
+                        <i class="fas fa-plus me-1"></i>Criar Card
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Column Modal -->
+    <div class="modal fade" id="editColumnModal" tabindex="-1" aria-labelledby="editColumnModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editColumnModalLabel">
+                        <i class="fas fa-edit me-2"></i>Editar Coluna
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editColumnForm">
+                        <div class="mb-3">
+                            <label for="editColumnTitle" class="form-label">Título da Coluna</label>
+                            <input type="text" class="form-control" id="editColumnTitle" placeholder="Ex: A Fazer, Em Progresso, Concluído..." required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editColumnType" class="form-label">Tipo da Coluna</label>
+                            <select class="form-select" id="editColumnType">
+                                <option value="normal">Normal</option>
+                                <option value="pending">Pendente</option>
+                                <option value="urgent">Urgente</option>
+                                <option value="completed">Concluído</option>
+                            </select>
+                            <div class="form-text">O tipo da coluna afeta sua aparência visual</div>
+                        </div>
+                        <input type="hidden" id="editColumnId">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="updateColumnBtn">
+                        <i class="fas fa-save me-1"></i>Salvar Alterações
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- SortableJS for drag and drop -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    
+    <!-- Application Scripts -->
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/main.js"></script>
+</body>
+</html>
