@@ -142,4 +142,4 @@ Este projeto está sob a licença MIT.
 
 ---
 
-**Desenvolvido com ❤️ para organizar suas tarefas!**"# notifyMe" 
+**Desenvolvido com ❤️ para organizar suas tarefas!**
